@@ -111,9 +111,4 @@ On Windows, use either mingw-w64 or MS Visual Studio 2015 Update 3/newer. On oth
 
 On Linux, see [our wiki's Linux build instructions](https://github.com/opentrack/opentrack/wiki/Building-on-Linux).
 
-## You can donate to the development of OpenTrack.
-
-`bitcoin:BC1QMXNGJMRAQXJ5LY7UAMRC4C7Z7DEJUE3RRQZGCD`
-
-<img width="340" height="340" alt="bw" src="https://github.com/user-attachments/assets/3003df72-f3eb-4443-a266-da33d99f871c" />
 
