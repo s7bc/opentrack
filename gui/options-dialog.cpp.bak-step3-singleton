@@ -8,9 +8,6 @@
 
 #include "options-dialog.hpp"
 #include "listener.h"
-#include "snapview-table.hpp"
-
-#include <algorithm>
 
 #include <utility>
 
@@ -18,7 +15,6 @@
 #include <QLayout>
 #include <QDialog>
 #include <QFileDialog>
-#include <QEvent>
 
 using namespace options;
 using namespace options::globals;
@@ -58,16 +54,10 @@ void options_dialog::set_disable_translation_state(bool value)
 options_dialog::options_dialog(std::unique_ptr<ITrackerDialog>& tracker_dialog_,
                                std::unique_ptr<IProtocolDialog>& proto_dialog_,
                                std::unique_ptr<IFilterDialog>& filter_dialog_,
-                               std::function<void(bool)> pause_keybindings,
-                               snapview& sv_) :
-    pause_keybindings(std::move(pause_keybindings)),
-    sv(sv_)
+                               std::function<void(bool)> pause_keybindings) :
+    pause_keybindings(std::move(pause_keybindings))
 {
     ui.setupUi(this);
-
-    snapview_tab = new snapview_table(sv, ui.tabWidget);
-    const int snapview_index = std::min(1, ui.tabWidget->count());
-    ui.tabWidget->insertTab(snapview_index, snapview_tab, tr("Snap View"));
 
     tie_setting(main.tray_enabled, ui.trayp);
     tie_setting(main.tray_start, ui.tray_start);
@@ -390,9 +380,6 @@ void options_dialog::save()
     for (auto* dlg : module_list{ tracker_dialog, proto_dialog, filter_dialog })
         if (dlg)
             dlg->save();
-
-    if (snapview_tab)
-        snapview_tab->save();
 }
 
 void options_dialog::reload()
@@ -404,18 +391,6 @@ void options_dialog::reload()
     for (auto* dlg : module_list{ tracker_dialog, proto_dialog, filter_dialog })
         if (dlg)
             dlg->reload();
-
-    if (snapview_tab)
-        snapview_tab->reload();
-}
-
-
-void options_dialog::changeEvent(QEvent* event)
-{
-    QDialog::changeEvent(event);
-
-    if (event && event->type() == QEvent::LanguageChange && snapview_tab)
-        ui.tabWidget->setTabText(ui.tabWidget->indexOf(snapview_tab), tr("Snap View"));
 }
 
 void options_dialog::closeEvent(QCloseEvent *)

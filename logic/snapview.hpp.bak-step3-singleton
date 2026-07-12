@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "api/plugin-api.hpp"
 #include "export.hpp"
@@ -48,7 +48,7 @@ class OTR_LOGIC_EXPORT snapview final : public QObject
 public:
     static constexpr int max_points_per_curve = 64;
 
-    explicit snapview(QObject* parent = nullptr);
+    static snapview& instance();
     ~snapview() override;
 
     void shutdown();
@@ -83,6 +83,8 @@ signals:
     void changed();
 
 private:
+    explicit snapview(QObject* parent = nullptr);
+
     struct point_settings;
     using point_ptr = std::unique_ptr<point_settings>;
 

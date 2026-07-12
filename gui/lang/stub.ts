@@ -57,13 +57,6 @@ Press &quot;clear calibration&quot; to remove any calibration data pertaining to
     </message>
 </context>
 <context>
-    <name>Snap View_auto_installer</name>
-    <message>
-        <source>Snap View</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>keyboard_listener</name>
     <message>
         <source>Dialog</source>
@@ -361,6 +354,10 @@ Press &quot;clear calibration&quot; to remove any calibration data pertaining to
     </message>
     <message>
         <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snap View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

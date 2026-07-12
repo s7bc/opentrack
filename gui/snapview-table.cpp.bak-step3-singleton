@@ -127,9 +127,8 @@ bool is_button_column(int column)
 
 } // namespace
 
-snapview_table::snapview_table(snapview& sv_, QWidget* parent) :
-    QWidget(parent),
-    sv(sv_)
+snapview_table::snapview_table(QWidget* parent) :
+    QWidget(parent)
 {
     setObjectName(QStringLiteral("snapview_table"));
 
@@ -175,7 +174,7 @@ snapview_table::snapview_table(snapview& sv_, QWidget* parent) :
     connect(table->horizontalHeader(), &QHeaderView::sectionClicked,
             this, &snapview_table::header_clicked);
 
-    connect(&sv, &snapview::changed,
+    connect(&snapview::instance(), &snapview::changed,
             this, &snapview_table::rebuild);
 
     rebuild();
@@ -206,12 +205,12 @@ void snapview_table::set_headers()
 
 void snapview_table::reload()
 {
-    sv.reload();
+    snapview::instance().reload();
 }
 
 void snapview_table::save()
 {
-    sv.save();
+    snapview::instance().save();
 }
 
 void snapview_table::rebuild()
@@ -221,7 +220,7 @@ void snapview_table::rebuild()
     set_headers();
     rebuild_profile_selector();
 
-    const QVector<snapview_point> points = sv.points();
+    const QVector<snapview_point> points = snapview::instance().points();
     table->setRowCount(points.size());
 
     for (int row = 0; row < points.size(); row++)
@@ -263,7 +262,7 @@ void snapview_table::rebuild()
                         snapview_key key;
 
                         if (prompt_snapview_key_binding(this, key))
-                            sv.update_key(point.axis, point.alt, point.index, key_index, key);
+                            snapview::instance().update_key(point.axis, point.alt, point.index, key_index, key);
                     });
             table->setCellWidget(row, bind_column, bind);
 
@@ -271,9 +270,9 @@ void snapview_table::rebuild()
             clear->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
             connect(clear, &QPushButton::clicked,
                     this,
-                    [this, point, key_index]
+                    [point, key_index]
                     {
-                        sv.clear_key(point.axis, point.alt, point.index, key_index);
+                        snapview::instance().clear_key(point.axis, point.alt, point.index, key_index);
                     });
             table->setCellWidget(row, clear_column, clear);
         };
@@ -299,11 +298,11 @@ void snapview_table::rebuild_profile_selector()
 
     profile_combo->clear();
 
-    const QStringList names = sv.profile_names();
+    const QStringList names = snapview::instance().profile_names();
     for (const QString& name : names)
         profile_combo->addItem(name);
 
-    profile_combo->setCurrentIndex(sv.selected_profile());
+    profile_combo->setCurrentIndex(snapview::instance().selected_profile());
 }
 
 void snapview_table::profile_changed(int index)
@@ -311,12 +310,12 @@ void snapview_table::profile_changed(int index)
     if (updating || index < 0)
         return;
 
-    sv.set_selected_profile(index);
+    snapview::instance().set_selected_profile(index);
 }
 
 void snapview_table::add_profile()
 {
-    sv.add_profile();
+    snapview::instance().add_profile();
 }
 
 void snapview_table::changeEvent(QEvent* event)
@@ -625,7 +624,7 @@ void snapview_table::toggle_all_enabled()
         const Axis axis = static_cast<Axis>(item->data(role_axis).toInt());
         const bool alt = item->data(role_alt).toBool();
         const int index = item->data(role_index).toInt();
-        sv.set_enabled(axis, alt, index, new_enabled);
+        snapview::instance().set_enabled(axis, alt, index, new_enabled);
     }
 }
 
@@ -645,5 +644,5 @@ void snapview_table::item_changed(QTableWidgetItem* item)
 
     item->setData(role_sort, enabled_sort_key(true, enabled));
     update_header_checkbox();
-    sv.set_enabled(axis, alt, index, enabled);
+    snapview::instance().set_enabled(axis, alt, index, enabled);
 }

@@ -12,10 +12,6 @@
 #include <QDialog>
 #include <QWidget>
 
-class QEvent;
-class snapview;
-class snapview_table;
-
 class OTR_GUI_EXPORT options_dialog final : public QDialog
 {
     Q_OBJECT
@@ -25,8 +21,7 @@ public:
     options_dialog(std::unique_ptr<ITrackerDialog>& tracker_dialog_,
                    std::unique_ptr<IProtocolDialog>& proto_dialog_,
                    std::unique_ptr<IFilterDialog>& filter_dialog_,
-                   std::function<void(bool)> pause_keybindings,
-                   snapview& sv);
+                   std::function<void(bool)> pause_keybindings);
     ~options_dialog() override;
     inline bool embeddable() noexcept { return false; }
     void switch_to_tracker_tab();
@@ -45,14 +40,11 @@ public:
     void reload();
 private:
     void closeEvent(QCloseEvent*) override;
-    void changeEvent(QEvent*) override;
     static QString kopts_to_string(const key_opts& opts);
 
     main_settings main;
     std::function<void(bool)> pause_keybindings;
     Ui::options_dialog ui;
-    snapview& sv;
-    snapview_table* snapview_tab = nullptr;
 
     ITrackerDialog*  tracker_dialog = nullptr;
     IProtocolDialog* proto_dialog   = nullptr;

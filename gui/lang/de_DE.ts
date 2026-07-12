@@ -58,13 +58,6 @@ Klicke „Kalibrierung löschen“, um jegliche Kalibrierungsdaten der zugehöri
     </message>
 </context>
 <context>
-    <name>Snap View_auto_installer</name>
-    <message>
-        <source>Snap View</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>keyboard_listener</name>
     <message>
         <source>Dialog</source>
@@ -403,6 +396,10 @@ Klicke „Kalibrierung löschen“, um jegliche Kalibrierungsdaten der zugehöri
     <message>
         <source>None</source>
         <translation>Nichts</translation>
+    </message>
+    <message>
+        <source>Snap View</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Tracker</source>

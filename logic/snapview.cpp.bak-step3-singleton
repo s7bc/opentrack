@@ -85,6 +85,12 @@ struct snapview::point_settings final
     {}
 };
 
+snapview& snapview::instance()
+{
+    static snapview self;
+    return self;
+}
+
 snapview::snapview(QObject* parent) :
     QObject(parent),
     control_b(options::make_bundle(QStringLiteral("opentrack-snap-view"))),

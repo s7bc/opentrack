@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "export.hpp"
 
@@ -10,14 +10,11 @@
 #include <QDialog>
 #include <QtEvents>
 
-class snapview;
-
 class OTR_GUI_EXPORT mapping_dialog final : public QDialog
 {
     Q_OBJECT
 public:
     mapping_dialog(Mappings& m);
-    snapview& snapview_state();
     void refresh_tab();
     inline bool embeddable() noexcept { return false; }
 private:

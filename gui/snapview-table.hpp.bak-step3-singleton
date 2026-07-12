@@ -10,14 +10,13 @@ class QComboBox;
 class QPushButton;
 class QTableWidget;
 class QTableWidgetItem;
-class snapview;
 
 class snapview_table final : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit snapview_table(snapview& sv, QWidget* parent = nullptr);
+    explicit snapview_table(QWidget* parent = nullptr);
 
 public slots:
     void reload();
@@ -46,7 +45,6 @@ private:
     void toggle_all_enabled();
     void rebuild_profile_selector();
 
-    snapview& sv;
     QComboBox* profile_combo = nullptr;
     QPushButton* add_profile_button = nullptr;
     QTableWidget* table = nullptr;

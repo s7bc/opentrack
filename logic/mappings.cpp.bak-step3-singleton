@@ -1,5 +1,4 @@
 #include "mappings.hpp"
-#include "snapview.hpp"
 
 #include <utility>
 
@@ -33,20 +32,5 @@ Mappings::Mappings(axis_opts_impl::axis_opts** opts) :
         { "spline-yaw",     "alt-spline-yaw",  *opts[Yaw] },
         { "spline-pitch",   "alt-spline-pitch",*opts[Pitch] },
         { "spline-roll",    "alt-spline-roll", *opts[Roll] }
-    },
-    snapview_(std::make_unique<snapview>())
-{
-    snapview_->set_mappings(this);
-}
-
-Mappings::~Mappings() = default;
-
-snapview& Mappings::snapview_state()
-{
-    return *snapview_;
-}
-
-const snapview& Mappings::snapview_state() const
-{
-    return *snapview_;
-}
+    }
+{}

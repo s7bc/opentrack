@@ -802,8 +802,7 @@ void main_window::show_options_dialog(bool show)
               embed ? pTrackerDialog : empty_ITD,
               embed ? pProtocolDialog : empty_IPD,
               embed ? pFilterDialog : empty_IFD,
-              [this](bool flag) { set_keys_enabled(!flag); },
-              pose.snapview_state());
+              [this](bool flag) { set_keys_enabled(!flag); });
 
     if (work)
     {

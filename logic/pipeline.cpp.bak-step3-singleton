@@ -570,7 +570,7 @@ ok:
         if (m(i).opts.invert_post)
             value(i) = -value(i);
 
-    value = m.snapview_state().apply(value);
+    value = snapview::instance().apply(value);
 
     libs.pProtocol->pose(value, raw);
 

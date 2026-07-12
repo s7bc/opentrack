@@ -1,16 +1,12 @@
-﻿#include "snapview-table.hpp"
+﻿#include "mapping-dialog.hpp"
 
 #include "logic/snapview.hpp"
 #include "spline/spline-widget.hpp"
 
 #include <QCoreApplication>
 #include <QEvent>
-#include <QPointer>
-#include <QTabWidget>
 #include <QTimer>
 #include <QWidget>
-
-#include <algorithm>
 
 namespace
 {
@@ -38,72 +34,22 @@ constexpr curve_binding mapping_widgets[] = {
     { "tzconfig_alt", TZ,    true  },
 };
 
-QString snapview_tab_text()
-{
-    return QCoreApplication::translate("Snap View_auto_installer", "Snap View");
-}
-
-snapview_table* find_snapview_table(QTabWidget* tabs)
-{
-    if (!tabs)
-        return nullptr;
-
-    for (int i = 0; i < tabs->count(); i++)
-    {
-        if (auto* table = qobject_cast<snapview_table*>(tabs->widget(i)))
-            return table;
-    }
-
-    return tabs->findChild<snapview_table*>(QStringLiteral("snapview_table"));
-}
-
-void remove_duplicate_snapview_tabs(QTabWidget* tabs, snapview_table* keep)
-{
-    if (!tabs)
-        return;
-
-    for (int i = tabs->count() - 1; i >= 0; i--)
-    {
-        QWidget* widget = tabs->widget(i);
-
-        if (widget == keep)
-            continue;
-
-        if (qobject_cast<snapview_table*>(widget))
-        {
-            tabs->removeTab(i);
-            widget->deleteLater();
-        }
-    }
-}
-
-int target_snapview_index(QTabWidget* tabs)
-{
-    if (!tabs)
-        return 0;
-
-    // In options-dialog.ui the built-in tabs start as:
-    //   0: Shortcuts
-    //   1: Output
-    // Insert snapview after Shortcuts and before Output without depending on localized tab text.
-    return std::min(1, tabs->count());
-}
-
-void register_widget_points(spline_widget* widget, Axis axis, bool alt)
+void register_widget_points(snapview& sv, spline_widget* widget, Axis axis, bool alt)
 {
     if (!widget || axis == NonAxis)
         return;
 
-    snapview::instance().register_curve(axis, alt, widget->points());
+    sv.register_curve(axis, alt, widget->points());
     widget->update();
 }
 
-void configure_mapping_dialog(QWidget* dialog)
+void configure_mapping_dialog(mapping_dialog* dialog)
 {
     if (!dialog || dialog->property("snap-view.mapping.installed").toBool())
         return;
 
     dialog->setProperty("snap-view.mapping.installed", true);
+    snapview& sv = dialog->snapview_state();
 
     for (const curve_binding& binding : mapping_widgets)
     {
@@ -118,44 +64,16 @@ void configure_mapping_dialog(QWidget* dialog)
 
         QObject::connect(widget, &spline_widget::points_changed,
                          widget,
-                         [widget, axis = binding.axis, alt = binding.alt]
+                         [widget, &sv, axis = binding.axis, alt = binding.alt]
                          {
-                             register_widget_points(widget, axis, alt);
+                             register_widget_points(sv, widget, axis, alt);
                          });
 
-        QTimer::singleShot(0, widget, [widget, axis = binding.axis, alt = binding.alt]
+        QTimer::singleShot(0, widget, [widget, &sv, axis = binding.axis, alt = binding.alt]
         {
-            register_widget_points(widget, axis, alt);
+            register_widget_points(sv, widget, axis, alt);
         });
     }
-}
-
-void configure_options_dialog(QWidget* dialog)
-{
-    if (!dialog)
-        return;
-
-    QTabWidget* tabs = dialog->findChild<QTabWidget*>();
-    if (!tabs)
-        return;
-
-    snapview_table* table = find_snapview_table(tabs);
-    if (!table)
-        table = new snapview_table(tabs);
-
-    table->setObjectName(QStringLiteral("snapview_table"));
-
-    remove_duplicate_snapview_tabs(tabs, table);
-
-    const int current_index = tabs->indexOf(table);
-    if (current_index >= 0)
-        tabs->removeTab(current_index);
-
-    const int insert_index = target_snapview_index(tabs);
-    tabs->insertTab(insert_index, table, snapview_tab_text());
-    tabs->setTabText(tabs->indexOf(table), snapview_tab_text());
-
-    QTimer::singleShot(0, table, &snapview_table::reload);
 }
 
 class snapview_auto_installer final : public QObject
@@ -174,12 +92,8 @@ public:
         if (!widget)
             return QObject::eventFilter(object, event);
 
-        const QByteArray class_name = widget->metaObject()->className();
-
-        if (class_name == QByteArrayLiteral("mapping_dialog"))
-            QTimer::singleShot(0, widget, [widget] { configure_mapping_dialog(widget); });
-        else if (class_name == QByteArrayLiteral("options_dialog"))
-            QTimer::singleShot(0, widget, [widget] { configure_options_dialog(widget); });
+        if (auto* dialog = qobject_cast<mapping_dialog*>(widget))
+            QTimer::singleShot(0, dialog, [dialog] { configure_mapping_dialog(dialog); });
 
         return QObject::eventFilter(object, event);
     }

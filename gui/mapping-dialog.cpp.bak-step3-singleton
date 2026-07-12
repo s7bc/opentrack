@@ -18,7 +18,7 @@ using namespace options;
 mapping_dialog::mapping_dialog(Mappings& m) : m(m), widgets{}
 {
     ui.setupUi(this);
-    m.snapview_state().set_mappings(&m);
+    snapview::instance().set_mappings(&m);
 
     QWidget* pages[] = {
         ui.tabWidgetPage1,
@@ -68,12 +68,6 @@ mapping_dialog::mapping_dialog(Mappings& m) : m(m), widgets{}
     connect(ui.buttonBox, &QDialogButtonBox::rejected, this, &mapping_dialog::reject);
     connect(this, &mapping_dialog::accepted, this, &mapping_dialog::doAccept);
     connect(this, &mapping_dialog::rejected, this, &mapping_dialog::doReject);
-}
-
-
-snapview& mapping_dialog::snapview_state()
-{
-    return m.snapview_state();
 }
 
 void mapping_dialog::load()

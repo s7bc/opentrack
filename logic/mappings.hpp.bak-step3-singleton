@@ -12,10 +12,6 @@
 #include "spline/spline.hpp"
 #include "main-settings.hpp"
 
-#include <memory>
-
-class snapview;
-
 struct OTR_LOGIC_EXPORT Map final
 {
     Map(const QString& spline_name, const QString& alt_spline_name, axis_opts& opts);
@@ -32,14 +28,8 @@ class OTR_LOGIC_EXPORT Mappings final
 {
 private:
     Map axes[6];
-    std::unique_ptr<snapview> snapview_;
-
 public:
     explicit Mappings(axis_opts** opts);
-    ~Mappings();
-
-    snapview& snapview_state();
-    const snapview& snapview_state() const;
 
     Map& operator()(int i) { return axes[i]; }
     const Map& operator()(int i) const { return axes[i]; }
